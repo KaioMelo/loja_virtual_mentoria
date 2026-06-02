@@ -17,4 +17,8 @@ public class AcessoService {
 	public Acesso save(Acesso acesso) {
 		return acessoRepository.save(acesso);
 	}
+	
+	public void delete(Long idAcesso) {
+		acessoRepository.deleteById(idAcesso);
+	}
 }
