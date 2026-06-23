@@ -25,6 +25,8 @@ import javax.persistence.UniqueConstraint;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "usuario")
 @SequenceGenerator(name = "seq_usuario", sequenceName = "seq_usuario", allocationSize = 1, initialValue = 1)
@@ -36,9 +38,11 @@ public class Usuario implements UserDetails{
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usuario")
 	private Long id;
 	
+	@JsonProperty("login")
 	@Column(nullable = false)
 	private String login;
 	
+	@JsonProperty("senha")
 	@Column(nullable = false)
 	private String senha;
 	
@@ -51,7 +55,7 @@ public class Usuario implements UserDetails{
 	@ForeignKey(value = ConstraintMode.CONSTRAINT, name = "pessoa_fk"))
 	private Pessoa pessoa;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "usuario_acesso", uniqueConstraints = @UniqueConstraint (columnNames = {"usuario_id", "acesso_id"},
 	name = "unique_acesso_user"), joinColumns = @JoinColumn( name = "usuario_id", referencedColumnName = "id", table = "usuario", 
 	unique = false, foreignKey = @ForeignKey(name = "usuario_fk", value = ConstraintMode.CONSTRAINT)),
