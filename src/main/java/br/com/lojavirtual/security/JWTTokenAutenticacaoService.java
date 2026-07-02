@@ -1,5 +1,6 @@
 package br.com.lojavirtual.security;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -14,9 +15,10 @@ import org.springframework.stereotype.Service;
 import br.com.lojavirtual.ApplicationContextLoad;
 import br.com.lojavirtual.model.Usuario;
 import br.com.lojavirtual.repository.UsuarioRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
 /*Criar a autenticacao e retornar a autenticacao JWT*/
 @Service
@@ -63,15 +65,17 @@ public class JWTTokenAutenticacaoService {
 		response.getWriter().write("{\"Authorization\": \""+ token +"\"}");
 	}
 	
-	public Authentication getAuthentication(HttpServletResponse response, HttpServletRequest request) {
+	public Authentication getAuthentication(HttpServletResponse response, HttpServletRequest request) throws IOException {
 		
 		String token = request.getHeader(HEADER_STRING);
 		
+		try {
+		
 		if(token != null) {
 			
-			String tokenLimpo = token.replace(SECRET, "").trim();
+			String tokenLimpo = token.replace(TOKEN_PREFIX, "").trim();
 			
-			SecretKey chaveObjeto = Keys.hmacShaKeyFor(tokenLimpo.getBytes(StandardCharsets.UTF_8));
+			SecretKey chaveObjeto = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 			
 			String user = Jwts.parser()
 			        .verifyWith(chaveObjeto)       // Usa a SecretKey configurada
@@ -95,7 +99,14 @@ public class JWTTokenAutenticacaoService {
 			}
 		}
 		
-		liberacaoCors(response);
+		}catch (SignatureException e) {
+			response.getWriter().write("Token está inválido!");
+		}catch (ExpiredJwtException e) {
+			response.getWriter().write("Token está expirado, efetue o login novamente!");
+		}finally {
+			liberacaoCors(response);
+		}
+		
 		return null;
 	}
 	
