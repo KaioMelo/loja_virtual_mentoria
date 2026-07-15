@@ -20,15 +20,20 @@ public class JWTApiAutenticacaoFilter extends GenericFilterBean{
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 
-		/*Estabelecer a autenticacao do user*/
-		Authentication authentication = new JWTTokenAutenticacaoService()
-				.getAuthentication((HttpServletResponse) response, (HttpServletRequest) request);
-		
-		/*Colocar o processo de autenticacao para o spring security*/
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
-		chain.doFilter(request, response);
-		
+		try {
+			/*Estabelecer a autenticacao do user*/
+			Authentication authentication = new JWTTokenAutenticacaoService()
+					.getAuthentication((HttpServletResponse) response, (HttpServletRequest) request);
+			
+			/*Colocar o processo de autenticacao para o spring security*/
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			
+			chain.doFilter(request, response);
+		}catch (Exception e) {
+			e.printStackTrace();
+			response.getWriter().write("Ocorreu um erro!");
+		}
+
 	}
 
 }

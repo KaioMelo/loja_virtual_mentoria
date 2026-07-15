@@ -1,5 +1,7 @@
 package br.com.lojavirtual.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import br.com.lojavirtual.model.Acesso;
@@ -20,5 +22,9 @@ public class AcessoService {
 	
 	public void delete(Long idAcesso) {
 		acessoRepository.deleteById(idAcesso);
+	}
+	
+	public Optional<Acesso> findById(Long id){
+		return acessoRepository.findById(id);
 	}
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import br.com.lojavirtual.exception.ExceptionMentoriaJava;
 import br.com.lojavirtual.model.Acesso;
 import br.com.lojavirtual.repository.AcessoRepository;
 import br.com.lojavirtual.service.AcessoService;
@@ -31,7 +32,16 @@ public class AcessoController {
 	
 	@ResponseBody /*Poder dar um retorno da API*/
 	@PostMapping(value = "**/salvarAcesso") /*Mapeando a url para receber um JSON*/
-	public ResponseEntity<Acesso> salvarAcesso(@RequestBody Acesso acesso) { /*Recebe o JSON e converte para Objeto*/
+	public ResponseEntity<Acesso> salvarAcesso(@RequestBody Acesso acesso) throws ExceptionMentoriaJava { /*Recebe o JSON e converte para Objeto*/
+		
+		
+		if(acesso.getId() == null) {
+			List<Acesso> acessos = acessoRepository.buscarAcessoDesc(acesso.getDescricao().toUpperCase());
+			
+			if(!acessos.isEmpty()) {
+				throw new ExceptionMentoriaJava("já existe acesso com a descricao: " + acesso.getDescricao());
+			}
+		}
 		
 		Acesso acessoSalvo = acessoService.save(acesso);
 		
@@ -59,9 +69,13 @@ public class AcessoController {
 	
 	@ResponseBody /*Poder dar um retorno da API*/
 	@GetMapping(value = "**/obterAcessoPorId/{id}") /*Mapeando a url para receber um JSON*/
-	public ResponseEntity<?> obterAcesso(@PathVariable("id") Long id) { /*Recebe o JSON e converte para Objeto*/
+	public ResponseEntity<?> obterAcesso(@PathVariable("id") Long id) throws ExceptionMentoriaJava { /*Recebe o JSON e converte para Objeto*/
 		
-		Acesso acesso =acessoRepository.getById(id);
+		Acesso acesso = acessoService.findById(id).orElse(null);
+		
+		if(acesso == null) {
+			throw new ExceptionMentoriaJava("Não encontrou acesso com codigo: " + id);
+		}
 		
 		return new ResponseEntity(acesso, HttpStatus.OK);
 	}
@@ -70,7 +84,7 @@ public class AcessoController {
 	@GetMapping(value = "**/buscarPorDesc/{desc}") /*Mapeando a url para receber um JSON*/
 	public ResponseEntity<List<Acesso>> buscarPorDesc(@PathVariable("desc") String descricao) { /*Recebe o JSON e converte para Objeto*/
 		
-		List<Acesso> acesso =acessoRepository.buscarAcessoDesc(descricao);
+		List<Acesso> acesso =acessoRepository.buscarAcessoDesc(descricao.toUpperCase());
 		
 		return new ResponseEntity<List<Acesso>>(acesso, HttpStatus.OK);
 	}
