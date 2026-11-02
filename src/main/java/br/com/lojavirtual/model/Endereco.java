@@ -19,6 +19,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.ManyToAny;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.lojavirtual.enums.TipoEndereco;
 
 @Entity
@@ -51,9 +53,16 @@ public class Endereco implements Serializable{
 	@Column(nullable = false)
 	private String cidade;
 	
+	@JsonIgnore
 	@ManyToOne(targetEntity = Pessoa.class)
 	@JoinColumn(name = "pessoa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "pessoa_fk"))
 	private Pessoa pessoa;
+	
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = 
+	@ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
+	private Pessoa empresa;
 	
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -129,6 +138,14 @@ public class Endereco implements Serializable{
 
 	public void setPessoa(Pessoa pessoa) {
 		this.pessoa = pessoa;
+	}
+
+	public Pessoa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Pessoa empresa) {
+		this.empresa = empresa;
 	}
 
 	public TipoEndereco getTipoEndereco() {

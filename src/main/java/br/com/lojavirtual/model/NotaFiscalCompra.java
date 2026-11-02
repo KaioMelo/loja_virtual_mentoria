@@ -53,6 +53,11 @@ public class NotaFiscalCompra implements Serializable{
 	private Pessoa pessoa;
 	
 	@ManyToOne
+	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = 
+	@ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
+	private Pessoa empresa;
+	
+	@ManyToOne
 	@JoinColumn(name = "conta_pagar_id", nullable = false, foreignKey = 
 	@ForeignKey(value = ConstraintMode.CONSTRAINT, name = "conta_pagar_fk"))
 	private ContaPagar contaPagar;
@@ -119,6 +124,14 @@ public class NotaFiscalCompra implements Serializable{
 
 	public void setPessoa(Pessoa pessoa) {
 		this.pessoa = pessoa;
+	}
+
+	public Pessoa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Pessoa empresa) {
+		this.empresa = empresa;
 	}
 
 	public ContaPagar getContaPagar() {

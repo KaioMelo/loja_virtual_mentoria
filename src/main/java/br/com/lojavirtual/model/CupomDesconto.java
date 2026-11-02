@@ -8,8 +8,6 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,10 +18,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import org.hibernate.annotations.ManyToAny;
-
-import br.com.lojavirtual.enums.TipoEndereco;
 
 @Entity
 @Table(name = "cupom_desconto")
@@ -46,6 +40,11 @@ public class CupomDesconto implements Serializable{
 	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataValidadeCupom;
+	
+	@ManyToOne
+	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = 
+	@ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
+	private Pessoa empresa;
 
 	public Long getId() {
 		return id;
@@ -85,6 +84,14 @@ public class CupomDesconto implements Serializable{
 
 	public void setDataValidadeCupom(Date dataValidadeCupom) {
 		this.dataValidadeCupom = dataValidadeCupom;
+	}
+
+	public Pessoa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Pessoa empresa) {
+		this.empresa = empresa;
 	}
 
 	@Override

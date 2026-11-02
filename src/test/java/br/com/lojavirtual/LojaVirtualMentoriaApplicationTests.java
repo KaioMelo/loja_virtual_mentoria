@@ -1,5 +1,6 @@
 package br.com.lojavirtual;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.lojavirtual.controlller.AcessoController;
+import br.com.lojavirtual.exception.ExceptionMentoriaJava;
 import br.com.lojavirtual.model.Acesso;
 import br.com.lojavirtual.repository.AcessoRepository;
 //import br.com.lojavirtual.service.AcessoService;
@@ -48,7 +50,7 @@ class LojaVirtualMentoriaApplicationTests {
 		
 		Acesso acesso = new Acesso();
 		
-		acesso.setDescricao("ROLE_COMPRADOR");
+		acesso.setDescricao("ROLE_COMPRADOR" + Calendar.getInstance().getTimeInMillis());
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		
@@ -158,7 +160,11 @@ class LojaVirtualMentoriaApplicationTests {
 		
 		acesso.setDescricao("ROLE_ALUNO");
 		
-		acesso = acessoController.salvarAcesso(acesso).getBody();
+		try {
+			acesso = acessoController.salvarAcesso(acesso).getBody();
+		} catch (ExceptionMentoriaJava e) {
+			e.printStackTrace();
+		}
 		
 		Assertions.assertEquals(true, acesso.getId() > 0);
 		
